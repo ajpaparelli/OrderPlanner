@@ -5,17 +5,60 @@
  */
 package forms;
 
+import configtool.MainForm;
+import datalayer.DoterraDB;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JComboBox;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author ajpap
  */
 public class ItemPanel extends javax.swing.JPanel {
-
+    DoterraDB db;
     /**
      * Creates new form ItemPanel
      */
-    public ItemPanel() {
+    public ItemPanel(DoterraDB db) {
+        this.db = db;
         initComponents();
+    }
+    
+    public void loadItems(JComboBox jbox)
+    {
+        String str = (String) jbox.getSelectedItem();
+        ResultSet rs = db.getItems(str);
+        Vector<String> columnNames = new Vector<>();
+        Vector<Vector<Object>> dataVector = new Vector<>();
+        try
+        {
+        int columnCount = rs.getMetaData().getColumnCount();
+
+        // Column names.
+
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+            columnNames.add(rs.getMetaData().getColumnName(columnIndex));
+        }
+
+        // Data of the table.
+        while (rs.next()) {
+            Vector<Object> rowVector = new Vector<>();
+            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                rowVector.add(rs.getObject(columnIndex));
+            }
+            dataVector.add(rowVector);
+        }
+        } catch (SQLException ex) {
+            Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        DefaultTableModel dtm = new DefaultTableModel(dataVector, columnNames);
+        jTable1.setModel(dtm);
     }
 
     /**
@@ -46,6 +89,7 @@ public class ItemPanel extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(jTable1);
 
         add(jScrollPane1);

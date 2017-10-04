@@ -59,7 +59,19 @@ public class OrderGroup extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-
+    public void resize(int n)
+    {
+        op = null;
+        op = new OrderPanel[n];
+        contents.removeAll();
+        for(int i = 0; i < n; i++)
+        {
+            op[i] = new OrderPanel();
+            contents.add(op[i]);
+            op[i].setOrderNum(i+1);
+            op[i].setVisible(true);
+        }        
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
     private forms.OrderPanel orderPanel2;
